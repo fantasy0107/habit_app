@@ -7,7 +7,7 @@ function App() {
   const API_URL =
     process.env.NODE_ENV === "development"
       ? "http://localhost/"
-      : process.env.REACT_APP_API_URL;
+      : "http://dodog.org/api/test/";
   useEffect(() => {
     axios
       .get(API_URL + "api/test")
