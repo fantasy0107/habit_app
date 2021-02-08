@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
-import {useEffect} from 'react';
-import axios from 'axios';
+import logo from "./logo.svg";
+import "./App.css";
+import { useEffect } from "react";
+import axios from "axios";
 
 function App() {
-
+  const API_URL =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost/"
+      : process.env.REACT_APP_API_URL;
   useEffect(() => {
-    // axios.get('http://dodog.org/api/test').then(({data}) => {
-    //   console.log('data', data);
-    // });
-  }, [])
+    axios
+      .get(API_URL + "api/test")
+      .then(({ data }) => {
+        console.log("data", data);
+      })
+      .catch((error) => {
+        console.log("error", error.message);
+      });
+  }, [API_URL]);
 
-console.log('process.env.NODE_ENV', process.env);
-  
+  console.log("process.env", process.env);
+
   return (
     <div className="App">
       <header className="App-header">
         TEST
-        
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
