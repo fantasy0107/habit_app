@@ -1,7 +1,18 @@
 import logo from './logo.svg';
 import './App.css';
+import {useEffect} from 'react';
+import axios from 'axios';
 
 function App() {
+
+  useEffect(() => {
+    // axios.get('http://dodog.org/api/test').then(({data}) => {
+    //   console.log('data', data);
+    // });
+  }, [])
+
+console.log('process.env.NODE_ENV', process.env);
+  
   return (
     <div className="App">
       <header className="App-header">
