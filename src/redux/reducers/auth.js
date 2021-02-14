@@ -1,4 +1,4 @@
-const visibilityFilter = (state = {}, { type, payload }) => {
+const data = (state = {}, { type, payload }) => {
   switch (type) {
     case "SET_AUTH": {
       return payload;
@@ -9,4 +9,4 @@ const visibilityFilter = (state = {}, { type, payload }) => {
   }
 };
 
-export default visibilityFilter;
+export default data;

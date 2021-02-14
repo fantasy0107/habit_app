@@ -10,6 +10,7 @@ import axios from "axios";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { API_URL } from "../config/config";
 
 const LoginScreen = (props) => {
   const email = useRef("");
@@ -18,22 +19,25 @@ const LoginScreen = (props) => {
   let history = useHistory();
   const dispatch = useDispatch();
 
-  const API_URL =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost/api/"
-      : "https://dodog.org/api/";
-
   const clickLogIn = () => {
     console.log("clickLogIn", {
       email,
       password,
     });
 
+  
+
     axios
-      .post(API_URL + "login", {
-        email: email.current,
-        password: password.current,
-      })
+      .post(
+        API_URL + "login",
+        {
+          email: email.current,
+          password: password.current,
+        },
+        {
+          // headers: { "Access-Control-Allow-Origin": "*" },
+        }
+      )
       .then(({ data }) => {
         const { user } = data;
 
@@ -42,11 +46,9 @@ const LoginScreen = (props) => {
           payload: user,
         });
 
-        console.log("ok");
         history.push("home");
       })
       .catch((error) => {
-        console.log("error", error);
         setOpen(true);
       });
   };
@@ -54,6 +56,14 @@ const LoginScreen = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
+
+  const changeEmail = (event) => {
+    email.current = event.target.value;
+  };
+  const changePassword = (event) => {
+    password.current = event.target.value;
+  };
+
   return (
     <Container>
       <div className=" w-full  h-9 bg-purple-700 p-2">
@@ -64,20 +74,13 @@ const LoginScreen = (props) => {
           <TextField
             id="standard-required"
             label="Email"
-            onChange={(event) => {
-              console.log("email", event);
-
-              email.current = event.target.value;
-            }}
+            onChange={changeEmail}
           />
           <TextField
             id="standard-required"
             label="Password"
-            onChange={(event) => {
-              console.log("Password", event);
-
-              password.current = event.target.value;
-            }}
+            onChange={changePassword}
+            type="password"
           />
         </FormControl>
         <div className="flex justify-end mt-2">
