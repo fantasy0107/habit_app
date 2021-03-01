@@ -1,50 +1,30 @@
-import { useDispatch, useSelector } from "react-redux";
-import { DB_UPDATE_RECORD } from "../redux/actionTypes";
-import pic from "../images/p81Eh87.jpg";
-import {
-  AppBar,
-  Button,
-  Divider,
-  IconButton,
-  MenuItem,
-  Select,
-  Toolbar,
-  Typography,
-  Fab,
-  Input,
-  Card,
-  CardContent,
-  CardActions,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  List,
-  ListItem,
-} from "@material-ui/core";
-import { useParams } from "react-router-dom";
+import { Button, Divider } from "@material-ui/core";
+import axios from "axios";
 import { get } from "lodash";
 import { useState } from "react";
-import { steps } from "../config/gameRules";
-import { API_URL } from "../config/config";
-import axios from "axios";
-import { useHistory } from "react-router-dom";
-import ReactMde from "react-mde";
 import ReactMarkdown from "react-markdown";
+import ReactMde from "react-mde";
 import "react-mde/lib/styles/css/react-mde-all.css";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { API_URL } from "../config/config";
 
 const TopicItemScreen = (props) => {
   const { id } = useParams();
-  const { content } = useSelector((state) =>
+  const { content, title } = useSelector((state) =>
     get(state, ["db", "topic", id], {})
   );
 
-  console.log("TopicItemScreen", content);
+  const [value, setValue] = useState(content);
 
-  const handleEditorChange = ({ html, text }) => {
-    console.log("handleEditorChange", html, text);
-  };
   const [selectedTab, setSelectedTab] = useState("preview");
+  const token = useSelector((state) =>
+    get(state, ["auth", "user_token", "value"], "")
+  );
+
+  const onChange = (value) => {
+    setValue(value);
+  };
 
   return (
     <div>
@@ -52,8 +32,11 @@ const TopicItemScreen = (props) => {
       <Divider variant="fullWidth" />
       <div className="container">
         <ReactMde
-          value={content}
+          value={value}
           selectedTab={selectedTab}
+          onTabChange={(tab) => {
+            setSelectedTab(tab);
+          }}
           generateMarkdownPreview={(markdown) =>
             Promise.resolve(<ReactMarkdown source={markdown} />)
           }
@@ -62,8 +45,29 @@ const TopicItemScreen = (props) => {
               tabIndex: -1,
             },
           }}
+          onChange={onChange}
         />
       </div>
+      {selectedTab === "write" && (
+        <Button
+          onClick={() => {
+            axios.patch(
+              API_URL + `topics/${id}`,
+              {
+                title,
+                content: value,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+          }}
+        >
+          更新
+        </Button>
+      )}
     </div>
   );
 };

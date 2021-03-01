@@ -10,6 +10,17 @@ const id = (state = [], { type, payload }) => {
   }
 };
 
+const tagID = (state = [], { type, payload }) => {
+  switch (type) {
+    case "TAG_FILL":
+      return payload;
+    default: {
+      return state;
+    }
+  }
+};
+
 export default combineReducers({
   id,
+  tagID,
 });

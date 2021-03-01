@@ -1,15 +1,7 @@
-import {
-  Button,
-  Container,
-  Fab,
-  FormControl,
-  Snackbar,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Button, Container } from "@material-ui/core";
 import axios from "axios";
 import { get } from "lodash";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { API_URL } from "../config/config";
@@ -42,9 +34,7 @@ const TopicScreen = (props) => {
           payload: data.topic_id,
         });
       })
-      .catch((error) => {
-        console.log("error", error);
-      });
+      .catch((error) => {});
   }, [dispatch, token]);
 
   const topicIDs = useSelector((state) => get(state, ["topic", "id"], []));

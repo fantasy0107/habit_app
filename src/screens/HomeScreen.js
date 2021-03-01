@@ -1,28 +1,23 @@
-import axios from "axios";
-
-import pic from "../images/p81Eh87.jpg";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
+  Avatar,
   BottomNavigation,
   BottomNavigationAction,
-  Card,
-  CardContent,
-  Typography,
   Button,
-  Avatar,
   List,
   ListItem,
-  ListItemIcon,
-  ListItemText,
   ListItemAvatar,
-  Fab,
+  ListItemText,
+  Typography,
 } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+import axios from "axios";
 import { get } from "lodash";
-import { DB_FILL } from "../redux/actionTypes";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { steps } from "../config/gameRules";
-import AddIcon from "@material-ui/icons/Add";
+import pic from "../images/p81Eh87.jpg";
+import { DB_FILL } from "../redux/actionTypes";
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -86,7 +81,6 @@ const HomeScreen = () => {
       <BottomNavigation
         value={value}
         onChange={(event, newValue) => {
-          console.log("object", newValue);
           setValue(newValue);
 
           history.push(newValue);

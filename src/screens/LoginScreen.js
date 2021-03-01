@@ -6,11 +6,10 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import axios from "axios";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { API_URL } from "../config/config";
+import api from "../config/api";
 
 const LoginScreen = (props) => {
   const email = useRef("");
@@ -20,27 +19,13 @@ const LoginScreen = (props) => {
   const dispatch = useDispatch();
 
   const clickLogIn = () => {
-    console.log("clickLogIn", {
-      email,
-      password,
-    });
-
-  
-
-    axios
-      .post(
-        API_URL + "login",
-        {
-          email: email.current,
-          password: password.current,
-        },
-        {
-          // headers: { "Access-Control-Allow-Origin": "*" },
-        }
-      )
+    api
+      .post("login", {
+        email: email.current,
+        password: password.current,
+      })
       .then(({ data }) => {
         const { user } = data;
-
         dispatch({
           type: "SET_AUTH",
           payload: user,
@@ -49,6 +34,8 @@ const LoginScreen = (props) => {
         history.push("home");
       })
       .catch((error) => {
+        console.log("error", error);
+
         setOpen(true);
       });
   };
@@ -85,11 +72,11 @@ const LoginScreen = (props) => {
         </FormControl>
         <div className="flex justify-end mt-2">
           <Button variant="contained" color="primary" onClick={clickLogIn}>
-            Log IN
+            登入
           </Button>
         </div>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <div>This is a success message!</div>
+          <div>找不到使用者</div>
         </Snackbar>
       </div>
     </Container>

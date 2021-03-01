@@ -1,34 +1,28 @@
-import { useDispatch, useSelector } from "react-redux";
-import { DB_UPDATE_RECORD } from "../redux/actionTypes";
-import pic from "../images/p81Eh87.jpg";
 import {
-  AppBar,
   Button,
-  Divider,
-  IconButton,
-  MenuItem,
-  Select,
-  Toolbar,
-  Typography,
-  Fab,
-  Input,
   Card,
-  CardContent,
   CardActions,
+  CardContent,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogContentText,
+  DialogTitle,
+  Divider,
+  Input,
   List,
   ListItem,
+  MenuItem,
+  Select,
+  Typography,
 } from "@material-ui/core";
-import { useParams } from "react-router-dom";
-import { get } from "lodash";
-import { useState } from "react";
-import { steps } from "../config/gameRules";
-import { API_URL } from "../config/config";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { get } from "lodash";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import { API_URL } from "../config/config";
+import { steps } from "../config/gameRules";
+import { DB_FILL, DB_UPDATE_RECORD } from "../redux/actionTypes";
 
 const TargetItemScreen = (props) => {
   const { target_item } = useParams();
@@ -74,64 +68,6 @@ const TargetItemScreen = (props) => {
     },
   ];
 
-  const topics = [
-    {
-      title: "吃飯",
-      content: "吃飯吃飯吃飯吃飯吃飯",
-      tag_id: 0,
-    },
-    {
-      title: "吃飯",
-      content: "吃飯吃飯吃飯吃飯吃飯",
-      tag_id: 0,
-    },
-    {
-      title: "吃飯",
-      content: "吃飯吃飯吃飯吃飯吃飯",
-      tag_id: 0,
-    },
-    {
-      title: "吃飯",
-      content: "吃飯吃飯吃飯吃飯吃飯",
-      tag_id: 0,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 1,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 1,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 1,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 1,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 1,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 1,
-    },
-    {
-      title: "出去玩",
-      content: "出去玩",
-      tag_id: 99,
-    },
-  ];
-
   const handleOpen = ({ title, content }) => {
     setOpen(true);
     setTitle(title);
@@ -140,10 +76,49 @@ const TargetItemScreen = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
+  const token = useSelector((state) =>
+    get(state, ["auth", "user_token", "value"], "")
+  );
+
+  useEffect(() => {
+    axios
+      .get(API_URL + "topics", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          target_id: target_item,
+        },
+      })
+      .then(({ data }) => {
+        const { db, topic_id, tag_id } = data;
+
+        dispatch({
+          type: "TOPIC_FILL",
+          payload: topic_id,
+        });
+
+        dispatch({
+          type: "TAG_FILL",
+          payload: tag_id,
+        });
+
+        if (db) {
+          dispatch({
+            type: DB_FILL,
+            payload: db,
+          });
+        }
+      })
+      .catch((error) => {});
+  }, [dispatch, target_item, token]);
+
+  const topicIDs = useSelector((state) => state.topic.id);
+  const tagIDs = useSelector((state) => state.topic.tagID);
+  const topics = useSelector((state) => state.topic.id);
 
   return (
     <div className="flex flex-col flex-1  my-3">
-      {/* <img alt={name} src={pic} className=" max-w-sm" /> */}
       <div className="flex flex-col items-center">
         <div className="flex">
           <Typography variant="h3">{name}</Typography>
@@ -188,30 +163,14 @@ const TargetItemScreen = (props) => {
       <Divider className="w-full"></Divider>
       <div className="p-3">
         <Typography className="text-blue-500">可用話題</Typography>
-        {interest.map((item) => {
-          const { title, value } = item;
+        {tagIDs.map((item) => {
           return (
-            <div className="flex my-2">
-              <Typography>{title}</Typography>
-              {topics.map((item) => {
-                const { tag_id, title, content } = item;
-                if (tag_id !== value) {
-                  return;
-                }
-
-                return (
-                  <Card className="mx-1">
-                    <Button onClick={() => handleOpen({ title, content })}>
-                      <CardContent>
-                        <CardActions>
-                          <Typography>{title}</Typography>
-                        </CardActions>
-                      </CardContent>
-                    </Button>
-                  </Card>
-                );
-              })}
-            </div>
+            <Tag
+              id={item}
+              tagID={item}
+              topics={topics}
+              handleOpen={handleOpen}
+            />
           );
         })}
       </div>
@@ -229,11 +188,61 @@ const TargetItemScreen = (props) => {
       </Dialog>
 
       <List>
-        {topics.map((item) => {
-          const { content } = item;
-          return <ListItem className="w-32">{content}</ListItem>;
+        {topicIDs.map((id) => {
+          return <TopicCard key={id} id={id} handleOpen={handleOpen} />;
         })}
       </List>
+    </div>
+  );
+};
+
+const TopicCard = ({ id, handleOpen }) => {
+  const { content, title } = useSelector((state) =>
+    get(state, ["db", "topic", id], {})
+  );
+  return (
+    <ListItem onClick={() => handleOpen({ title, content })} className="w-32">
+      {title}
+    </ListItem>
+  );
+};
+
+const Tag = ({ id, topics, handleOpen, tagID }) => {
+  const { name = "" } = useSelector((state) =>
+    get(state, ["db", "target_tag", id], {})
+  );
+
+  return (
+    <div className="flex my-2">
+      <Typography>{name}</Typography>
+      {topics.map((item) => {
+        return <Topic id={item} handleOpen={handleOpen} tagID={tagID} />;
+      })}
+    </div>
+  );
+};
+
+const Topic = ({ id, handleOpen, tagID }) => {
+  const { title, content, tag_id } = useSelector((state) =>
+    get(state, ["db", "topic", id], {})
+  );
+  console.log("tag_id", tag_id);
+
+  if (tag_id.includes(tagID) == false) {
+    return <div />;
+  }
+
+  return (
+    <div>
+      <Card className="mx-1">
+        <Button onClick={() => handleOpen({ title, content })}>
+          <CardContent>
+            <CardActions>
+              <Typography>{title}</Typography>
+            </CardActions>
+          </CardContent>
+        </Button>
+      </Card>
     </div>
   );
 };
