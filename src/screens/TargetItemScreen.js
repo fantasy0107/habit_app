@@ -17,12 +17,13 @@ import {
 } from "@material-ui/core";
 import axios from "axios";
 import { get } from "lodash";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import { API_URL } from "../config/config";
 import { steps } from "../config/gameRules";
 import { DB_FILL, DB_UPDATE_RECORD } from "../redux/actionTypes";
+import api from "../config/api";
 
 const TargetItemScreen = (props) => {
   const { target_item } = useParams();
@@ -34,6 +35,7 @@ const TargetItemScreen = (props) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [open, setOpen] = useState(false);
+  const addTagName = useRef("");
   const handleChange = (event) => {
     const { value } = event.target;
 
@@ -93,14 +95,43 @@ const TargetItemScreen = (props) => {
       .then(({ data }) => {
         const { db, topic_id, tag_id } = data;
 
-        dispatch({
-          type: "TOPIC_FILL",
-          payload: topic_id,
-        });
+        if (tag_id) {
+          dispatch({
+            type: "TOPIC_FILL",
+            payload: topic_id,
+          });
+
+          dispatch({
+            type: "TAG_FILL",
+            payload: tag_id,
+          });
+
+          if (db) {
+            dispatch({
+              type: DB_FILL,
+              payload: db,
+            });
+          }
+        }
+      })
+      .catch((error) => {});
+  }, [dispatch, target_item, token]);
+
+  const topicIDs = useSelector((state) => get(state, "topic.id", []));
+  const tagIDs = useSelector((state) => get(state, "topic.tagID", []));
+
+  const addTag = () => {
+    api
+      .post("target_tags", {
+        target_id: id,
+        name: addTagName.current,
+      })
+      .then(({ data }) => {
+        const { db, id } = data;
 
         dispatch({
-          type: "TAG_FILL",
-          payload: tag_id,
+          type: "TAG_ADD",
+          payload: id,
         });
 
         if (db) {
@@ -110,12 +141,10 @@ const TargetItemScreen = (props) => {
           });
         }
       })
-      .catch((error) => {});
-  }, [dispatch, target_item, token]);
-
-  const topicIDs = useSelector((state) => state.topic.id);
-  const tagIDs = useSelector((state) => state.topic.tagID);
-  const topics = useSelector((state) => state.topic.id);
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
 
   return (
     <div className="flex flex-col flex-1  my-3">
@@ -146,33 +175,38 @@ const TargetItemScreen = (props) => {
       <Divider className="w-full"></Divider>
       <div className="p-3">
         <Typography variant="h5">興趣</Typography>
-        <div className="flex">
-          {interest.map((item) => {
-            return (
-              <div className="mr-1">
-                <Typography className="rounded bg-red-400 text-white p-2">
-                  {item.title}
-                </Typography>
-              </div>
-            );
-          })}
-        </div>
-        <Input />
-        <Button>新增</Button>
+
+        <TagNames />
+
+        <Input
+          onChange={(e) => {
+            addTagName.current = e.target.value;
+          }}
+        />
+        <Button onClick={addTag}>新增</Button>
       </div>
       <Divider className="w-full"></Divider>
       <div className="p-3">
-        <Typography className="text-blue-500">可用話題</Typography>
+        <Typography className="text-blue-500">可用標籤話題</Typography>
         {tagIDs.map((item) => {
           return (
             <Tag
               id={item}
               tagID={item}
-              topics={topics}
+              topics={topicIDs}
               handleOpen={handleOpen}
             />
           );
         })}
+      </div>
+
+      <div className="px-3">
+        <Typography className="text-blue-500">可用話題</Typography>
+        <List>
+          {topicIDs.map((id) => {
+            return <TopicCard key={id} id={id} handleOpen={handleOpen} />;
+          })}
+        </List>
       </div>
 
       <Dialog
@@ -186,12 +220,6 @@ const TargetItemScreen = (props) => {
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
       </Dialog>
-
-      <List>
-        {topicIDs.map((id) => {
-          return <TopicCard key={id} id={id} handleOpen={handleOpen} />;
-        })}
-      </List>
     </div>
   );
 };
@@ -207,6 +235,11 @@ const TopicCard = ({ id, handleOpen }) => {
   );
 };
 
+/**
+ *  標籤
+ *  1. 可用話題
+ *  ...
+ */
 const Tag = ({ id, topics, handleOpen, tagID }) => {
   const { name = "" } = useSelector((state) =>
     get(state, ["db", "target_tag", id], {})
@@ -214,10 +247,36 @@ const Tag = ({ id, topics, handleOpen, tagID }) => {
 
   return (
     <div className="flex my-2">
-      <Typography>{name}</Typography>
+      <Typography variant="h5">{name}</Typography>
       {topics.map((item) => {
         return <Topic id={item} handleOpen={handleOpen} tagID={tagID} />;
       })}
+    </div>
+  );
+};
+
+const TagNames = () => {
+  const tagIDs = useSelector((state) => get(state, ["topic", "tagID"], []));
+
+  return (
+    <div className="flex flex-row">
+      {tagIDs.map((item) => {
+        return <TagItem id={item} />;
+      })}
+    </div>
+  );
+};
+
+const TagItem = ({ id }) => {
+  const { name } = useSelector((state) =>
+    get(state, ["db", "target_tag", id], [])
+  );
+
+  return (
+    <div className="mx-1">
+      <Typography className="rounded bg-red-400 text-white p-2">
+        {name}
+      </Typography>
     </div>
   );
 };
@@ -226,7 +285,6 @@ const Topic = ({ id, handleOpen, tagID }) => {
   const { title, content, tag_id } = useSelector((state) =>
     get(state, ["db", "topic", id], {})
   );
-  console.log("tag_id", tag_id);
 
   if (tag_id.includes(tagID) == false) {
     return <div />;

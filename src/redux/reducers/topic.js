@@ -14,6 +14,8 @@ const tagID = (state = [], { type, payload }) => {
   switch (type) {
     case "TAG_FILL":
       return payload;
+    case "TAG_ADD":
+      return [payload, ...state];
     default: {
       return state;
     }
