@@ -10,6 +10,7 @@ import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import api from "../config/api";
+import FacebookLogin from "react-facebook-login";
 
 const LoginScreen = (props) => {
   const email = useRef("");
@@ -31,6 +32,10 @@ const LoginScreen = (props) => {
           payload: user,
         });
 
+        const token = user.user_token.value;
+
+        localStorage.setItem("token", `Bearer ${token}`);
+
         history.push("home");
       })
       .catch((error) => {
@@ -49,6 +54,10 @@ const LoginScreen = (props) => {
   };
   const changePassword = (event) => {
     password.current = event.target.value;
+  };
+
+  const responseFacebook = (response) => {
+    console.log(response);
   };
 
   return (
@@ -74,6 +83,14 @@ const LoginScreen = (props) => {
           <Button variant="contained" color="primary" onClick={clickLogIn}>
             登入
           </Button>
+
+          <FacebookLogin
+            appId="727049798184350"
+            autoLoad={true}
+            fields="name,email,picture"
+            // onClick={componentClicked}
+            callback={responseFacebook}
+          />
         </div>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
           <div>找不到使用者</div>
