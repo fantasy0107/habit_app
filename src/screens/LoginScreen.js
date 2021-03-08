@@ -57,7 +57,30 @@ const LoginScreen = (props) => {
   };
 
   const responseFacebook = (response) => {
-    console.log(response);
+    const { accessToken } = response;
+
+    api
+      .post("login/facebook", {
+        token: accessToken,
+      })
+      .then(({ data }) => {
+        const { user } = data;
+        dispatch({
+          type: "SET_AUTH",
+          payload: user,
+        });
+
+        const token = user.user_token.value;
+
+        localStorage.setItem("token", `Bearer ${token}`);
+
+        history.push("home");
+      })
+      .catch((error) => {
+        console.log("error", error);
+
+        setOpen(true);
+      });
   };
 
   return (
