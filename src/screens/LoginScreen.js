@@ -87,7 +87,7 @@ const LoginScreen = (props) => {
     console.log(response);
     const { accessToken } = response;
     api
-      .post("login/facebook", {
+      .post("login/google", {
         token: accessToken,
       })
       .then(({ data }) => {
@@ -136,13 +136,13 @@ const LoginScreen = (props) => {
             </Button>
           </div>
           <div>
-            <FacebookLogin
+            {/* <FacebookLogin
               appId="727049798184350"
               fields="name,email,picture"
               autoLoad={false}
               // onClick={componentClicked}
               callback={responseFacebook}
-            />
+            /> */}
           </div>
           <div>
             <GoogleLogin
