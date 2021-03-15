@@ -109,7 +109,9 @@ const LoginScreen = (props) => {
         setOpen(true);
       });
   };
-
+  const componentClicked = () => {
+    console.log("Clicked!");
+  };
   return (
     <Container>
       <div className=" w-full  h-9 bg-purple-700 p-2">
@@ -136,18 +138,17 @@ const LoginScreen = (props) => {
             </Button>
           </div>
           <div>
-            {/* <FacebookLogin
+            <FacebookLogin
               appId="727049798184350"
               fields="name,email,picture"
               autoLoad={false}
-              // onClick={componentClicked}
+              onClick={componentClicked}
               callback={responseFacebook}
-            /> */}
+            />
           </div>
           <div>
             <GoogleLogin
               clientId="794749865058-47dog279hhjn6c9pcq515lqvcqj71h34.apps.googleusercontent.com"
-             
               buttonText="Login"
               onSuccess={responseGoogle}
               onFailure={responseGoogle}
