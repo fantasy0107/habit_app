@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import api from "../config/api";
 import FacebookLogin from "react-facebook-login";
+import GoogleLogin from "react-google-login";
 
 const LoginScreen = (props) => {
   const email = useRef("");
@@ -82,6 +83,32 @@ const LoginScreen = (props) => {
         setOpen(true);
       });
   };
+  const responseGoogle = (response) => {
+    console.log(response);
+    const { accessToken } = response;
+    api
+      .post("login/facebook", {
+        token: accessToken,
+      })
+      .then(({ data }) => {
+        const { user } = data;
+        dispatch({
+          type: "SET_AUTH",
+          payload: user,
+        });
+
+        const token = user.user_token.value;
+
+        localStorage.setItem("token", `Bearer ${token}`);
+
+        history.push("home");
+      })
+      .catch((error) => {
+        console.log("error", error);
+
+        setOpen(true);
+      });
+  };
 
   return (
     <Container>
@@ -102,18 +129,31 @@ const LoginScreen = (props) => {
             type="password"
           />
         </FormControl>
-        <div className="flex justify-end mt-2">
-          <Button variant="contained" color="primary" onClick={clickLogIn}>
-            登入
-          </Button>
-
-          <FacebookLogin
-            appId="727049798184350"
-            autoLoad={true}
-            fields="name,email,picture"
-            // onClick={componentClicked}
-            callback={responseFacebook}
-          />
+        <div className="flex flex-col justify-end mt-2">
+          <div>
+            <Button variant="contained" color="primary" onClick={clickLogIn}>
+              登入
+            </Button>
+          </div>
+          <div>
+            <FacebookLogin
+              appId="727049798184350"
+              fields="name,email,picture"
+              autoLoad={false}
+              // onClick={componentClicked}
+              callback={responseFacebook}
+            />
+          </div>
+          <div>
+            <GoogleLogin
+              clientId="794749865058-47dog279hhjn6c9pcq515lqvcqj71h34.apps.googleusercontent.com"
+             
+              buttonText="Login"
+              onSuccess={responseGoogle}
+              onFailure={responseGoogle}
+              cookiePolicy={"single_host_origin"}
+            />
+          </div>
         </div>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
           <div>找不到使用者</div>
