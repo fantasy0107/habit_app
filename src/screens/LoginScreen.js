@@ -28,6 +28,7 @@ const LoginScreen = (props) => {
       })
       .then(({ data }) => {
         const { user } = data;
+        console.log('user', user)
         dispatch({
           type: "SET_AUTH",
           payload: user,

@@ -160,7 +160,9 @@ const HabitModal = ({ id, isVisible, handleClose }) => {
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
+  console.log("history", history);
   const habitIDs = useSelector((state) => get(state, "habits.id", []));
   const [isVisible, setIsVisible] = useState(false);
   const menus = [
@@ -229,29 +231,7 @@ const HomeScreen = () => {
 
   return (
     <div className="flex">
-      <div className="w-2/12 bg-blue-400">
-        <div className="m-3">
-          <div className="mb-5">DoDoG</div>
-          {menus.map((item) => {
-            const title = item.title;
-            const itmes = item.items;
-            return (
-              <div>
-                <div>{title}</div>
-                {itmes.map((temp) => {
-                  return (
-                    <div className="flex justify-items-center">
-                      <AddIcon />
-                      {temp.title}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div className="w-10/12 relative">
+      <div className="w-full relative">
         <div className="flex shadow mb-4">
           <TextField
             fullWidth
@@ -279,6 +259,7 @@ const HomeScreen = () => {
               {habitIDs.map((id) => {
                 return (
                   <HabitItem
+                    key={id}
                     id={id}
                     handleClose={handleClose}
                     handleOpen={handleOpen}
