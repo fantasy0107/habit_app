@@ -1,17 +1,11 @@
-import {
-  Button,
-  Container,
-  FormControl,
-  Snackbar,
-  TextField,
-  Typography,
-} from "@material-ui/core";
+import { Button, Container, Divider, FormControl, FormGroup, Snackbar, TextField, Typography } from "@material-ui/core";
 import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
-import api from "../config/api";
 import FacebookLogin from "react-facebook-login";
 import GoogleLogin from "react-google-login";
+import { useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+
+import api from "../config/api";
 
 const LoginScreen = (props) => {
   const email = useRef("");
@@ -28,7 +22,7 @@ const LoginScreen = (props) => {
       })
       .then(({ data }) => {
         const { user } = data;
-        console.log('user', user)
+        console.log("user", user);
         dispatch({
           type: "SET_AUTH",
           payload: user,
@@ -114,54 +108,65 @@ const LoginScreen = (props) => {
     console.log("Clicked!");
   };
   return (
-    <Container>
-      <div className=" w-full  h-9 bg-purple-700 p-2">
-        <Typography className="text-white">Log in</Typography>
-      </div>
-      <div className="flex flex-col  justify-center">
-        <FormControl noValidate autoComplete="off">
-          <TextField
-            id="standard-required"
-            label="Email"
-            onChange={changeEmail}
-          />
-          <TextField
-            id="standard-required"
-            label="Password"
-            onChange={changePassword}
-            type="password"
-          />
-        </FormControl>
-        <div className="flex flex-col justify-end mt-2">
-          <div>
-            <Button variant="contained" color="primary" onClick={clickLogIn}>
-              登入
+    <div className='h-screen bg-gray-100'>
+      <div className='container  mx-auto '>
+        <div className="flex flex-col items-center ">
+          <div className="flex flex-col justify-center items-center  border-solid border mt-3 p-4 w-1/3 bg-white">
+            <Typography variant="h3">Habit</Typography>
+            <FormControl noValidate autoComplete="off">
+              <TextField
+                id="standard-required"
+                label="Email"
+                onChange={changeEmail}
+              />
+              <TextField
+                id="standard-required"
+                label="Password"
+                onChange={changePassword}
+                type="password"
+              />
+              <div className="my-2" />
+              <Button variant="contained" color="primary" onClick={clickLogIn}>
+                登入
+              </Button>
+
+              <div className="my-3">
+                <Divider />
+              </div>
+
+              <FacebookLogin
+                icon="fa-facebook"
+                appId="727049798184350"
+                fields="name,email,picture"
+                autoLoad={false}
+                onClick={componentClicked}
+                callback={responseFacebook}
+                textButton="Login via Facebook"
+              />
+
+              <div className="my-1" />
+
+              <GoogleLogin
+                clientId="794749865058-47dog279hhjn6c9pcq515lqvcqj71h34.apps.googleusercontent.com"
+                buttonText="Login via Google"
+                onSuccess={responseGoogle}
+                onFailure={responseGoogle}
+                cookiePolicy={"single_host_origin"}
+              />
+            </FormControl>
+          </div>
+          <div className="flex flex-col justify-center items-center  border-solid border mt-3 p-4 w-1/3 bg-white">
+            <Button variant="contained" color="primary"  >
+              註冊
             </Button>
           </div>
-          <div>
-            <FacebookLogin
-              appId="727049798184350"
-              fields="name,email,picture"
-              autoLoad={false}
-              onClick={componentClicked}
-              callback={responseFacebook}
-            />
-          </div>
-          <div>
-            <GoogleLogin
-              clientId="794749865058-47dog279hhjn6c9pcq515lqvcqj71h34.apps.googleusercontent.com"
-              buttonText="Login"
-              onSuccess={responseGoogle}
-              onFailure={responseGoogle}
-              cookiePolicy={"single_host_origin"}
-            />
-          </div>
+
+          <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <div>找不到使用者</div>
+          </Snackbar>
         </div>
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-          <div>找不到使用者</div>
-        </Snackbar>
       </div>
-    </Container>
+    </div>
   );
 };
 
