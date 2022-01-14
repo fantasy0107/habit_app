@@ -123,7 +123,7 @@ const LoginScreen = (props) => {
           <div className="text-2xl">Sign in/Create account</div>
 
           <FacebookLogin
-            appId="3331320300435467"
+            appId="727049798184350"
             autoLoad={false}
             onClick={componentClicked}
             callback={responseFacebook}
