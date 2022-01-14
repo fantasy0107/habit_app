@@ -3,8 +3,8 @@ import { Icon } from "@material-ui/core";
 
 import { useRef, useState } from "react";
 // import FacebookLogin from "react-facebook-login";
-// import FacebookLogin  from "react-facebook-login/dist/facebook-login-render-props";
-import FacebookLogin from 'react-facebook-login';
+import FacebookLogin  from "react-facebook-login/dist/facebook-login-render-props";
+// import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from "react-google-login";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
