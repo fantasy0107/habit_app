@@ -3,7 +3,8 @@ import { Icon } from "@material-ui/core";
 
 import { useRef, useState } from "react";
 // import FacebookLogin from "react-facebook-login";
-import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
+// import FacebookLogin  from "react-facebook-login/dist/facebook-login-render-props";
+import FacebookLogin from 'react-facebook-login';
 import GoogleLogin from "react-google-login";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -121,10 +122,17 @@ const LoginScreen = (props) => {
         <div className="flex-grow justify-center p-5 bg-white">
           <div className="text-5xl">Habit</div>
           <div className="text-2xl">Sign in/Create account</div>
-
           <FacebookLogin
             appId="727049798184350"
             autoLoad={false}
+            fields="name,email,picture"
+            onClick={componentClicked}
+            callback={responseFacebook}
+          />
+          {/* <FacebookLogin
+            appId="727049798184350"
+            autoLoad={false}
+            fields="name,email,picture"
             onClick={componentClicked}
             callback={responseFacebook}
             render={(renderProps) => (
@@ -136,7 +144,7 @@ const LoginScreen = (props) => {
                 Continue with Facebook
               </button>
             )}
-          />
+          /> */}
           <div className=" h-1" />
 
           <GoogleLogin
