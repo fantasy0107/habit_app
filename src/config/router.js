@@ -17,13 +17,14 @@ import {
   ListItemText,
 } from "@material-ui/core";
 import { Home } from "@material-ui/icons";
+import React from "react";
 
 const Routers = () => {
   const token = useSelector((state) => get(state, "auth.user_token.value"));
 
-  if (!token) {
-    return <LoginScreen />;
-  }
+  // if (!token) {
+  //   return <LoginScreen />;
+  // }
 
   const menus = [
     {
@@ -39,22 +40,6 @@ const Routers = () => {
 
   return (
     <Router>
-      <Drawer variant="persistent" anchor="left" open={true}>
-        <List>
-          <ListItem>
-            <Link to="home">
-              <ListItemIcon>
-                <Home />
-              </ListItemIcon>
-              <ListItemText>home</ListItemText>
-            </Link>
-          </ListItem>
-          <ListItem>
-            <Link to="/">login</Link>
-          </ListItem>
-        </List>
-      </Drawer>
-
       <Switch>
         <Route exact path="/">
           <LoginScreen />

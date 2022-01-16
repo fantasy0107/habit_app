@@ -1,10 +1,7 @@
 import { Facebook } from "@material-ui/icons";
 import { Icon } from "@material-ui/core";
-
 import { useRef, useState } from "react";
-// import FacebookLogin from "react-facebook-login";
-import FacebookLogin  from "react-facebook-login/dist/facebook-login-render-props";
-// import FacebookLogin from 'react-facebook-login';
+import FacebookLogin from "react-facebook-login/dist/facebook-login-render-props";
 import GoogleLogin from "react-google-login";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -16,6 +13,8 @@ const LoginScreen = (props) => {
   const [open, setOpen] = useState(false);
   let history = useHistory();
   const dispatch = useDispatch();
+
+  console.log({ object: history });
 
   const clickLogIn = () => {
     api
@@ -58,7 +57,7 @@ const LoginScreen = (props) => {
   const responseFacebook = (response) => {
     const { accessToken } = response;
 
-    console.log({response});
+    console.log({ response });
 
     api
       .post("login/facebook", {
@@ -122,13 +121,7 @@ const LoginScreen = (props) => {
         <div className="flex-grow justify-center p-5 bg-white">
           <div className="text-5xl">Habit</div>
           <div className="text-2xl">Sign in/Create account</div>
-          {/* <FacebookLogin
-            appId="727049798184350"
-            autoLoad={false}
-            fields="name,email,picture"
-            onClick={componentClicked}
-            callback={responseFacebook}
-          /> */}
+          
           <FacebookLogin
             appId="727049798184350"
             autoLoad={false}
@@ -156,7 +149,7 @@ const LoginScreen = (props) => {
             render={(renderProps) => (
               <button
                 onClick={() => {
-                  console.log(123);
+                  console.log('Login');
                   // renderProps.onClick();
                 }}
                 className="bg-black text-white p-3 rounded-md w-full"
