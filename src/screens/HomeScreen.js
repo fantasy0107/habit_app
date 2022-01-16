@@ -1,28 +1,53 @@
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-  Fab,
-  Modal,
-  FormControl,
-  InputLabel,
-  Input,
-} from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { get } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
+import get from "lodash/get";
 import { useDispatch, useSelector } from "react-redux";
+import { useGoogleLogout } from "react-google-login";
 import { useHistory } from "react-router-dom";
-import api from "../config/api";
-import { DB_FILL } from "../redux/actionTypes";
 
 const HomeScreen = () => {
-  return <div className="flex">home</div>;
+  const name = useSelector((state) => get(state, "auth.name", "default"));
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const onLogoutSuccess = () => {
+    console.log('onLogoutSuccess');
+
+  };
+  const onFailure = () => {
+    console.log('onFailure');
+  };
+
+  const clientId =
+    "794749865058-47dog279hhjn6c9pcq515lqvcqj71h34.apps.googleusercontent.com";
+
+  const { signOut } = useGoogleLogout({
+    clientId,
+    onFailure,
+    onLogoutSuccess,
+  });
+
+  const logout = () => {
+    signOut();
+    history.push("/");
+
+    dispatch({
+      type: "SET_AUTH_LOGOUT",
+      payload: null,
+    });
+  };
+
+  return (
+    <div className="flex h-screen">
+      <div className="w-1/3 bg-gray-200 p-3">sideBar</div>
+      <div className=" flex-1">
+        <div>Home</div>
+        <div>{name}</div>
+        <div>
+          <button onClick={logout}>logout</button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default HomeScreen;
