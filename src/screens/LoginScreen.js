@@ -146,6 +146,7 @@ const LoginScreen = (props) => {
             onFailure={responseGoogle}
             cookiePolicy={"single_host_origin"}
             isSignedIn={false}
+            autoLoad={false}
             render={(renderProps) => (
               <button
                 onClick={() => {
