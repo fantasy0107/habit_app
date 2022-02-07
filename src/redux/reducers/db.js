@@ -1,33 +1,36 @@
+import { combineReducers } from "redux";
 import { DB_FILL, DB_UPDATE_RECORD } from "../actionTypes";
+import get from "lodash/get";
 
-const db = (state = {}, { type, payload }) => {
+const habits = (state = {}, { type, payload }) => {
   switch (type) {
-    case DB_FILL: {
-      const deepCopyDB = Object.assign({}, state);
+    case DB_FILL:
+      if (get(payload, "habits", {})) {
+        return { ...state, ...payload.habits };
+      }
 
-      console.log("db", { state, type, payload });
-      Object.keys(payload).forEach((item) => {
-        if (deepCopyDB[item]) {
-          deepCopyDB[item] = { ...deepCopyDB[item], ...payload[item] };
-        } else {
-          deepCopyDB[item] = payload[item];
-        }
-      });
-
-      return deepCopyDB;
-    }
-    case DB_UPDATE_RECORD: {
-      const deepCopyDB = Object.assign({}, state);
-      const { key, id, value } = payload;
-
-      deepCopyDB[key][id] = { ...deepCopyDB[key][id], ...value };
-
-      return deepCopyDB;
-    }
+      return state;
     default: {
       return state;
     }
   }
 };
 
-export default db;
+const tags = (state = {}, { type, payload }) => {
+  switch (type) {
+    case DB_FILL:
+      if (get(payload, "tags", {})) {
+        return { ...state, ...payload.tags };
+      }
+
+      return state;
+    default: {
+      return state;
+    }
+  }
+};
+
+export default combineReducers({
+  habits,
+  tags,
+});

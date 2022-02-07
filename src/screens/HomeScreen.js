@@ -2,7 +2,9 @@ import React from "react";
 import get from "lodash/get";
 import { useDispatch, useSelector } from "react-redux";
 import { useGoogleLogout } from "react-google-login";
-import { useHistory } from "react-router-dom";
+import { Link, Route, Switch, useHistory } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import SignInContainer from "../containers/SignInContainer";
 
 const HomeScreen = () => {
   const name = useSelector((state) => get(state, "auth.name", "default"));
@@ -10,11 +12,10 @@ const HomeScreen = () => {
   const dispatch = useDispatch();
 
   const onLogoutSuccess = () => {
-    console.log('onLogoutSuccess');
-
+    console.log("onLogoutSuccess");
   };
   const onFailure = () => {
-    console.log('onFailure');
+    console.log("onFailure");
   };
 
   const clientId =
@@ -31,22 +32,22 @@ const HomeScreen = () => {
     history.push("/");
 
     dispatch({
-      type: "SET_AUTH_LOGOUT",
-      payload: null,
+      type: "USER_LOGGED_OUT",
     });
+
+    localStorage.removeItem("token");
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-1/3 bg-gray-200 p-3">sideBar</div>
-      <div className=" flex-1">
+    <SignInContainer>
+      <div className="flex-1">
         <div>Home</div>
         <div>{name}</div>
         <div>
           <button onClick={logout}>logout</button>
         </div>
       </div>
-    </div>
+    </SignInContainer>
   );
 };
 
